@@ -1,3 +1,4 @@
+import { motion, useReducedMotion } from "framer-motion";
 import type { QuotationDocumentData } from "../types/quotation";
 
 interface QuotationPreviewProps {
@@ -6,113 +7,129 @@ interface QuotationPreviewProps {
 
 const rowFill = (index: number) => (index % 2 === 0 ? "bg-[color:var(--mist)]" : "bg-white");
 
-export const QuotationPreview = ({ data }: QuotationPreviewProps) => (
-  <div className="rounded-[30px] border border-[color:var(--line)] bg-[color:var(--paper-strong)] p-3 shadow-[0_30px_90px_rgba(13,43,85,0.12)] sm:p-5">
-    <div className="mx-auto max-w-[780px] rounded-[24px] bg-white p-4 shadow-[0_18px_45px_rgba(13,43,85,0.1)] sm:p-8">
-      <div className="overflow-hidden rounded-[20px] border border-[color:var(--navy)] bg-[color:var(--navy)] text-center text-white">
-        <div className="px-6 py-5">
-          <p className="text-lg font-extrabold tracking-[0.08em]">{data.headerCompanyName}</p>
-          <p className="mt-2 text-2xl font-extrabold tracking-[0.16em] text-[color:var(--paper)]">
-            {data.headerTitle}
+export const QuotationPreview = ({ data }: QuotationPreviewProps) => {
+  const prefersReducedMotion = useReducedMotion();
+
+  return (
+    <motion.div
+      initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
+      whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.15 }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      className="rounded-[30px] border border-[color:var(--line)] bg-[linear-gradient(180deg,rgba(255,255,255,0.82),rgba(245,249,252,0.96))] p-3 shadow-[0_30px_90px_rgba(7,21,40,0.12)] sm:p-5"
+    >
+      <motion.div
+        initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.985 }}
+        whileInView={prefersReducedMotion ? undefined : { opacity: 1, scale: 1 }}
+        viewport={{ once: true, amount: 0.15 }}
+        transition={{ duration: 0.55, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
+        className="mx-auto max-w-[780px] rounded-[24px] bg-white p-4 shadow-[0_18px_45px_rgba(7,21,40,0.1)] sm:p-8"
+      >
+        <div className="overflow-hidden rounded-[20px] border border-[color:var(--navy)] bg-[color:var(--navy)] text-center text-white">
+          <div className="px-6 py-5">
+            <p className="text-lg font-extrabold tracking-[0.08em]">{data.headerCompanyName}</p>
+            <p className="mt-2 text-2xl font-extrabold tracking-[0.16em] text-[color:var(--paper)]">
+              {data.headerTitle}
+            </p>
+            <p className="mt-3 text-sm text-[#c8d8ed]">{data.headerSubtitle}</p>
+          </div>
+        </div>
+
+        <div className="mt-5 grid overflow-hidden rounded-[18px] border border-[color:var(--line)] text-sm sm:grid-cols-4">
+          <div className="bg-[color:var(--navy)] px-4 py-3 font-bold text-white">Quotation Ref.</div>
+          <div className="bg-[color:var(--mist)] px-4 py-3 font-semibold text-[color:var(--ink)]">
+            {data.quotationReference}
+          </div>
+          <div className="bg-[color:var(--navy)] px-4 py-3 font-bold text-white">Date</div>
+          <div className="bg-[color:var(--mist)] px-4 py-3 font-semibold text-[color:var(--ink)]">
+            {data.displayDate}
+          </div>
+          <div className="bg-[color:var(--navy-soft)] px-4 py-3 font-bold text-white">Location</div>
+          <div className="bg-[color:var(--slate)] px-4 py-3 font-semibold text-[color:var(--ink)]">
+            {data.location}
+          </div>
+          <div className="bg-[color:var(--navy-soft)] px-4 py-3 font-bold text-white">Utilities</div>
+          <div
+            className={`px-4 py-3 font-extrabold ${
+              data.utilitiesTone === "success"
+                ? "bg-[rgba(37,119,82,0.08)] text-[color:var(--success)]"
+                : "bg-[rgba(192,57,43,0.08)] text-[color:var(--danger)]"
+            }`}
+          >
+            {data.utilitiesMode}
+          </div>
+        </div>
+
+        <SectionBanner title="Addressed To" />
+        <DetailTable
+          rows={[
+            { label: "To", value: data.recipientTitle },
+            { label: "Company", value: data.recipientCompanyName },
+            { label: "Subject", value: data.subject },
+          ]}
+        />
+
+        <p className="mt-6 text-[15px] text-[color:var(--ink)]">{data.salutation}</p>
+        <p className="mt-4 text-[15px] leading-7 text-[color:var(--ink)]">{data.introduction}</p>
+
+        <SectionBanner title="Description of Offer" />
+        <WideTable rows={data.offerRows} />
+
+        <SectionBanner title={data.servicesSection.title} />
+        {data.servicesSection.intro ? (
+          <p className="mt-4 text-[15px] leading-7 text-[color:var(--ink)]">{data.servicesSection.intro}</p>
+        ) : null}
+        <ul className="mt-4 space-y-2 pl-5 text-[15px] leading-7 text-[color:var(--ink)]">
+          {data.servicesSection.items.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
+        {data.servicesSection.note ? (
+          <p className="mt-4 rounded-2xl border border-[rgba(21,184,176,0.28)] bg-[rgba(21,184,176,0.08)] px-4 py-3 text-[14px] leading-6 text-[color:var(--ink-soft)]">
+            {data.servicesSection.note}
           </p>
-          <p className="mt-3 text-sm text-[#c8d8ed]">{data.headerSubtitle}</p>
-        </div>
-      </div>
+        ) : null}
 
-      <div className="mt-5 grid overflow-hidden rounded-[18px] border border-[color:var(--line)] text-sm sm:grid-cols-4">
-        <div className="bg-[color:var(--navy)] px-4 py-3 font-bold text-white">Quotation Ref.</div>
-        <div className="bg-[color:var(--mist)] px-4 py-3 font-semibold text-[color:var(--ink)]">
-          {data.quotationReference}
-        </div>
-        <div className="bg-[color:var(--navy)] px-4 py-3 font-bold text-white">Date</div>
-        <div className="bg-[color:var(--mist)] px-4 py-3 font-semibold text-[color:var(--ink)]">
-          {data.displayDate}
-        </div>
-        <div className="bg-[color:var(--navy-soft)] px-4 py-3 font-bold text-white">Location</div>
-        <div className="bg-[color:var(--slate)] px-4 py-3 font-semibold text-[color:var(--ink)]">
-          {data.location}
-        </div>
-        <div className="bg-[color:var(--navy-soft)] px-4 py-3 font-bold text-white">Utilities</div>
-        <div
-          className={`px-4 py-3 font-extrabold ${
-            data.utilitiesTone === "success"
-              ? "bg-[rgba(37,119,82,0.08)] text-[color:var(--success)]"
-              : "bg-[rgba(192,57,43,0.08)] text-[color:var(--danger)]"
-          }`}
-        >
-          {data.utilitiesMode}
-        </div>
-      </div>
+        <SectionBanner title="Payment Terms & Financial Summary" />
+        <WideTable rows={data.financialRows} />
 
-      <SectionBanner title="Addressed To" />
-      <DetailTable
-        rows={[
-          { label: "To", value: data.recipientTitle },
-          { label: "Company", value: data.recipientCompanyName },
-          { label: "Subject", value: data.subject },
-        ]}
-      />
-
-      <p className="mt-6 text-[15px] text-[color:var(--ink)]">{data.salutation}</p>
-      <p className="mt-4 text-[15px] leading-7 text-[color:var(--ink)]">{data.introduction}</p>
-
-      <SectionBanner title="Description of Offer" />
-      <WideTable rows={data.offerRows} />
-
-      <SectionBanner title={data.servicesSection.title} />
-      {data.servicesSection.intro ? (
-        <p className="mt-4 text-[15px] leading-7 text-[color:var(--ink)]">{data.servicesSection.intro}</p>
-      ) : null}
-      <ul className="mt-4 space-y-2 pl-5 text-[15px] leading-7 text-[color:var(--ink)]">
-        {data.servicesSection.items.map((item) => (
-          <li key={item}>{item}</li>
-        ))}
-      </ul>
-      {data.servicesSection.note ? (
-        <p className="mt-4 rounded-2xl border border-[rgba(184,134,11,0.3)] bg-[rgba(184,134,11,0.08)] px-4 py-3 text-[14px] leading-6 text-[color:var(--ink-soft)]">
-          {data.servicesSection.note}
-        </p>
-      ) : null}
-
-      <SectionBanner title="Payment Terms & Financial Summary" />
-      <WideTable rows={data.financialRows} />
-
-      <SectionBanner title="Terms & Conditions" />
-      <div className="overflow-hidden rounded-[18px] border border-[color:var(--line)]">
-        {data.terms.map((term, index) => (
-          <div key={term} className={`grid grid-cols-[64px_1fr] ${rowFill(index)}`}>
-            <div className="border-r border-[color:var(--line)] px-4 py-3 font-extrabold text-[color:var(--navy)]">
-              {index + 1}.
+        <SectionBanner title="Terms & Conditions" />
+        <div className="overflow-hidden rounded-[18px] border border-[color:var(--line)]">
+          {data.terms.map((term, index) => (
+            <div key={term} className={`grid grid-cols-[64px_1fr] ${rowFill(index)}`}>
+              <div className="border-r border-[color:var(--line)] px-4 py-3 font-extrabold text-[color:var(--navy)]">
+                {index + 1}.
+              </div>
+              <div className="px-4 py-3 text-[15px] leading-7 text-[color:var(--ink)]">{term}</div>
             </div>
-            <div className="px-4 py-3 text-[15px] leading-7 text-[color:var(--ink)]">{term}</div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
 
-      <SectionBanner title="Closing & Acceptance" />
-      <p className="mt-4 text-[15px] leading-7 text-[color:var(--ink)]">{data.closingText}</p>
+        <SectionBanner title="Closing & Acceptance" />
+        <p className="mt-4 text-[15px] leading-7 text-[color:var(--ink)]">{data.closingText}</p>
 
-      <div className="mt-6 overflow-hidden rounded-[18px] border border-[color:var(--line)]">
-        <div className="grid sm:grid-cols-2">
-          <div className="bg-[color:var(--navy)] px-4 py-3 text-sm font-extrabold uppercase tracking-[0.12em] text-white">
-            {data.issuerHeader}
+        <div className="mt-6 overflow-hidden rounded-[18px] border border-[color:var(--line)]">
+          <div className="grid sm:grid-cols-2">
+            <div className="bg-[color:var(--navy)] px-4 py-3 text-sm font-extrabold uppercase tracking-[0.12em] text-white">
+              {data.issuerHeader}
+            </div>
+            <div className="bg-[color:var(--navy-soft)] px-4 py-3 text-sm font-extrabold uppercase tracking-[0.12em] text-white">
+              {data.clientHeader}
+            </div>
           </div>
-          <div className="bg-[color:var(--navy-soft)] px-4 py-3 text-sm font-extrabold uppercase tracking-[0.12em] text-white">
-            {data.clientHeader}
+          <div className="grid sm:grid-cols-2">
+            <SignaturePanel accent="light" block={data.issuerBlock} />
+            <SignaturePanel accent="mist" block={data.clientBlock} />
           </div>
         </div>
-        <div className="grid sm:grid-cols-2">
-          <SignaturePanel accent="light" block={data.issuerBlock} />
-          <SignaturePanel accent="mist" block={data.clientBlock} />
-        </div>
-      </div>
 
-      <div className="mt-8 border-t border-[color:var(--gold)] pt-5 text-center text-sm italic text-[#777]">
-        {data.footerText}
-      </div>
-    </div>
-  </div>
-);
+        <div className="mt-8 border-t border-[color:var(--gold)] pt-5 text-center text-sm italic text-[#777]">
+          {data.footerText}
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+};
 
 const SectionBanner = ({ title }: { title: string }) => (
   <div className="mt-7 rounded-r-2xl rounded-l-lg border-l-4 border-[color:var(--gold)] bg-[color:var(--mist)] px-4 py-3">
@@ -177,4 +194,3 @@ const SignaturePanel = ({
     </div>
   </div>
 );
-

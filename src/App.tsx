@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { motion, useReducedMotion } from "framer-motion";
 import { startTransition, useDeferredValue, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { FormProvider, useFieldArray, useForm, useWatch, type Resolver } from "react-hook-form";
 import { ArrayEditor } from "./components/ArrayEditor";
@@ -29,10 +30,12 @@ const paymentScheduleOptions = [
 ] as const;
 
 const inputClassName =
-  "w-full rounded-2xl border border-[color:var(--line)] bg-white px-4 py-3 text-sm text-[color:var(--ink)] outline-none transition placeholder:text-[color:var(--ink-soft)]/60 focus:border-[color:var(--gold)] focus:ring-4 focus:ring-[rgba(184,134,11,0.15)]";
+  "w-full rounded-2xl border border-[color:var(--line)] bg-white/92 px-4 py-3 text-sm text-[color:var(--ink)] shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] outline-none transition placeholder:text-[color:var(--ink-soft)]/60 focus:border-[color:var(--gold)] focus:ring-4 focus:ring-[rgba(21,184,176,0.16)]";
 
 const readOnlyClassName =
-  "w-full rounded-2xl border border-dashed border-[rgba(13,43,85,0.18)] bg-[color:var(--slate)]/90 px-4 py-3 text-sm font-semibold text-[color:var(--ink-soft)]";
+  "w-full rounded-2xl border border-dashed border-[rgba(86,111,138,0.22)] bg-[linear-gradient(180deg,rgba(245,249,252,0.92),rgba(255,255,255,0.82))] px-4 py-3 text-sm font-semibold text-[color:var(--ink-soft)]";
+
+const standardEase = [0.22, 1, 0.36, 1] as const;
 
 type StatusTone = "neutral" | "success" | "error";
 
@@ -53,7 +56,7 @@ const formatSavedTime = (value: string | null) => {
 };
 
 const App = () => {
-  const previewRef = useRef<HTMLDivElement | null>(null);
+  const previewRef = useRef<HTMLElement | null>(null);
   const lastTemplateIdRef = useRef<TemplateId>("sharjah-excluding-utilities");
   const autoSuggestionsRef = useRef({
     quotationName: "",
@@ -73,6 +76,7 @@ const App = () => {
   const [status, setStatus] = useState<StatusMessage | null>(null);
   const [isGeneratingWord, setIsGeneratingWord] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
 
   const form = useForm<QuotationFormValues>({
     resolver: zodResolver(quotationSchema) as Resolver<QuotationFormValues>,
@@ -432,49 +436,64 @@ const App = () => {
     <FormProvider {...form}>
       <div className="min-h-screen px-4 py-6 sm:px-6 lg:px-10">
         <div className="mx-auto max-w-[1480px]">
-          <header className="paper-grid relative overflow-hidden rounded-[34px] border border-[color:var(--line)] bg-[linear-gradient(145deg,rgba(13,43,85,0.96),rgba(15,55,102,0.92),rgba(184,134,11,0.14))] px-6 py-8 text-white shadow-[0_28px_80px_rgba(13,43,85,0.18)] sm:px-10 sm:py-10">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.18),transparent_28%)]" />
+          <motion.header
+            initial={prefersReducedMotion ? false : { opacity: 0, y: 28 }}
+            animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: standardEase }}
+            className="paper-grid relative overflow-hidden rounded-[34px] border border-[rgba(7,21,40,0.08)] bg-[linear-gradient(140deg,rgba(251,253,255,0.96),rgba(236,247,252,0.94),rgba(217,239,245,0.94),rgba(204,237,235,0.88))] px-6 py-8 text-[color:var(--navy)] shadow-[0_28px_80px_rgba(7,21,40,0.12)] sm:px-10 sm:py-10"
+          >
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(21,184,176,0.34),transparent_24%),radial-gradient(circle_at_82%_6%,rgba(255,255,255,0.16),transparent_22%),linear-gradient(180deg,rgba(255,255,255,0.04),transparent)]" />
             <div className="relative grid gap-8 lg:grid-cols-[1.25fr_0.9fr]">
-              <div className="space-y-5">
-                <div className="inline-flex items-center rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-extrabold uppercase tracking-[0.28em] text-[color:var(--paper)]">
+              <motion.div
+                initial={prefersReducedMotion ? false : { opacity: 0, y: 18 }}
+                animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+                transition={{ duration: 0.65, delay: 0.08, ease: standardEase }}
+                className="space-y-5"
+              >
+                <div className="inline-flex items-center rounded-full border border-[rgba(7,21,40,0.08)] bg-[rgba(255,255,255,0.34)] px-4 py-2 text-xs font-extrabold uppercase tracking-[0.28em] text-[color:var(--navy)] backdrop-blur">
                   Interactive Quotation Builder
                 </div>
                 <div className="space-y-4">
-                  <h1 className="section-title max-w-4xl text-4xl font-semibold leading-tight sm:text-5xl">
+                  <h1 className="section-title max-w-4xl text-4xl font-semibold leading-tight text-[rgba(7,21,40,0.97)] sm:text-5xl">
                     Build labour accommodation quotations from structured inputs, then export them as polished Word and PDF documents.
                   </h1>
-                  <p className="max-w-3xl text-base leading-8 text-white/82">
+                  <p className="max-w-3xl text-base leading-8 text-[rgba(7,21,40,0.76)]">
                     This builder follows the Miller quotation layouts for Sharjah and UAQ, keeps the wording template-driven, and lets the team generate consistent documents without touching the raw contract body.
                   </p>
                 </div>
-                <div className="flex flex-wrap gap-3 text-sm text-white/82">
+                <div className="flex flex-wrap gap-3 text-sm text-[rgba(7,21,40,0.8)]">
                   <Badge>{currentTemplate.label}</Badge>
                   <Badge>{currentTemplate.utilitiesMode} Utilities</Badge>
                   <Badge>{previewData.quotationReference}</Badge>
                 </div>
-              </div>
+              </motion.div>
 
-              <div className="rounded-[28px] border border-white/15 bg-white/8 p-5 backdrop-blur">
-                <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-[color:var(--paper)]">
+              <motion.div
+                initial={prefersReducedMotion ? false : { opacity: 0, y: 18 }}
+                animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+                transition={{ duration: 0.65, delay: 0.16, ease: standardEase }}
+                className="rounded-[28px] border border-[rgba(7,21,40,0.08)] bg-[linear-gradient(180deg,rgba(255,255,255,0.52),rgba(255,255,255,0.28))] p-5 backdrop-blur"
+              >
+                <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-[color:var(--navy)]">
                   Workflow
                 </p>
-                <ol className="mt-4 space-y-4 text-sm leading-7 text-white/84">
+                <ol className="mt-4 space-y-4 text-sm leading-7 text-[rgba(7,21,40,0.78)]">
                   <li>1. Select one of the four quotation variants.</li>
                   <li>2. Fill the grouped business details and contract values.</li>
                   <li>3. Review the live preview for structure and wording.</li>
                   <li>4. Export the quotation as a `.docx` or `.pdf` with dynamic naming.</li>
                 </ol>
-              </div>
+              </motion.div>
             </div>
-          </header>
+          </motion.header>
 
           {status ? (
             <div
-              className={`mt-6 rounded-[24px] border px-5 py-4 text-sm shadow-[0_14px_36px_rgba(13,43,85,0.06)] ${
+              className={`mt-6 rounded-[24px] border px-5 py-4 text-sm shadow-[0_14px_36px_rgba(7,21,40,0.06)] ${
                 status.tone === "success"
                   ? "border-[rgba(37,119,82,0.24)] bg-[rgba(37,119,82,0.08)] text-[color:var(--success)]"
                   : status.tone === "error"
-                    ? "border-[rgba(192,57,43,0.22)] bg-[rgba(192,57,43,0.08)] text-[color:var(--danger)]"
+                    ? "border-[rgba(224,91,73,0.22)] bg-[rgba(224,91,73,0.08)] text-[color:var(--danger)]"
                     : "border-[rgba(13,43,85,0.12)] bg-white/70 text-[color:var(--ink-soft)]"
               }`}
             >
@@ -492,7 +511,7 @@ const App = () => {
                   <button
                     type="button"
                     onClick={handleLoadSample}
-                    className="rounded-full border border-[color:var(--gold)] px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-[color:var(--navy)] transition hover:-translate-y-0.5 hover:bg-[color:var(--gold-soft)]"
+                    className="rounded-full border border-[color:var(--gold)] bg-[rgba(21,184,176,0.08)] px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-[color:var(--navy)] transition hover:-translate-y-0.5 hover:bg-[color:var(--gold-soft)]"
                   >
                     Load Sample Data
                   </button>
@@ -930,9 +949,15 @@ const App = () => {
               </SectionCard>
             </div>
 
-            <aside className="space-y-6 xl:sticky xl:top-6 xl:self-start">
-              <div className="overflow-hidden rounded-[30px] border border-[color:var(--line)] bg-[color:var(--paper-strong)] shadow-[0_24px_70px_rgba(13,43,85,0.08)]">
-                <div className="border-b border-[color:var(--line)] bg-[linear-gradient(135deg,rgba(13,43,85,0.06),rgba(184,134,11,0.09))] px-5 py-5">
+            <motion.aside
+              initial={prefersReducedMotion ? false : { opacity: 0, x: 18 }}
+              whileInView={prefersReducedMotion ? undefined : { opacity: 1, x: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.55, ease: standardEase }}
+              className="space-y-6 xl:sticky xl:top-6 xl:self-start"
+            >
+              <div className="overflow-hidden rounded-[30px] border border-[color:var(--line)] bg-[linear-gradient(180deg,rgba(255,255,255,0.86),rgba(248,251,253,0.96))] shadow-[0_24px_70px_rgba(7,21,40,0.08)]">
+                <div className="border-b border-[color:var(--line)] bg-[linear-gradient(135deg,rgba(15,94,140,0.08),rgba(21,184,176,0.12),rgba(255,255,255,0.3))] px-5 py-5">
                   <p className="text-[11px] font-extrabold uppercase tracking-[0.3em] text-[color:var(--navy-soft)]">
                     Builder Controls
                   </p>
@@ -971,7 +996,7 @@ const App = () => {
                     </ActionButton>
                   </div>
 
-                  <div className="rounded-[24px] border border-[color:var(--line)] bg-white/80 p-4">
+                  <div className="rounded-[24px] border border-[color:var(--line)] bg-[linear-gradient(180deg,rgba(255,255,255,0.86),rgba(246,249,252,0.94))] p-4">
                     <div className="flex items-start justify-between gap-4">
                       <div>
                         <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-[color:var(--navy-soft)]">
@@ -999,7 +1024,7 @@ const App = () => {
                     <MetricCard label="VAT" value={`AED ${formatCurrency(watchedValues.vatValue || 0)}`} />
                   </div>
 
-                  <div className="rounded-[24px] border border-[color:var(--line)] bg-[linear-gradient(180deg,rgba(13,43,85,0.04),rgba(235,242,250,0.7))] p-4">
+                  <div className="rounded-[24px] border border-[color:var(--line)] bg-[linear-gradient(180deg,rgba(15,94,140,0.06),rgba(238,248,255,0.86))] p-4">
                     <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-[color:var(--navy-soft)]">
                       Quick Snapshot
                     </p>
@@ -1014,10 +1039,17 @@ const App = () => {
                   </div>
                 </div>
               </div>
-            </aside>
+            </motion.aside>
           </div>
 
-          <section ref={previewRef} className="mt-8">
+          <motion.section
+            ref={previewRef}
+            initial={prefersReducedMotion ? false : { opacity: 0, y: 24 }}
+            whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.18 }}
+            transition={{ duration: 0.6, ease: standardEase }}
+            className="mt-8"
+          >
             <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <p className="text-[11px] font-extrabold uppercase tracking-[0.3em] text-[color:var(--navy-soft)]">
@@ -1032,7 +1064,19 @@ const App = () => {
               </p>
             </div>
             <QuotationPreview data={previewData} />
-          </section>
+          </motion.section>
+
+          <motion.footer
+            initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
+            whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.8 }}
+            transition={{ duration: 0.45, ease: standardEase }}
+            className="pb-2 pt-8 text-center"
+          >
+            <p className="text-sm font-semibold tracking-[0.08em] text-[rgba(7,21,40,0.62)]">
+              &copy; Built by Kamzy
+            </p>
+          </motion.footer>
         </div>
       </div>
     </FormProvider>
@@ -1060,7 +1104,7 @@ const Field = ({ label, error, hint, children }: FieldProps) => (
 );
 
 const Badge = ({ children }: { children: ReactNode }) => (
-  <span className="rounded-full border border-white/14 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-white/88">
+  <span className="rounded-full border border-[rgba(7,21,40,0.08)] bg-[rgba(255,255,255,0.3)] px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-[rgba(7,21,40,0.82)] backdrop-blur">
     {children}
   </span>
 );
@@ -1075,10 +1119,10 @@ interface ActionButtonProps {
 const ActionButton = ({ children, disabled, kind, onClick }: ActionButtonProps) => {
   const className =
     kind === "primary"
-      ? "rounded-2xl bg-[color:var(--navy)] px-4 py-3 text-sm font-extrabold uppercase tracking-[0.14em] text-white shadow-[0_14px_30px_rgba(13,43,85,0.18)] transition hover:-translate-y-0.5 hover:bg-[color:var(--navy-soft)] disabled:translate-y-0 disabled:opacity-60"
+      ? "rounded-2xl bg-[linear-gradient(135deg,var(--navy),var(--navy-soft))] px-4 py-3 text-sm font-extrabold uppercase tracking-[0.14em] text-white shadow-[0_14px_30px_rgba(7,21,40,0.18)] transition hover:-translate-y-0.5 hover:brightness-110 disabled:translate-y-0 disabled:opacity-60"
       : kind === "secondary"
-        ? "rounded-2xl border border-[color:var(--gold)] bg-[rgba(184,134,11,0.08)] px-4 py-3 text-sm font-extrabold uppercase tracking-[0.14em] text-[color:var(--navy)] transition hover:-translate-y-0.5 hover:bg-[color:var(--gold-soft)] disabled:translate-y-0 disabled:opacity-60"
-        : "rounded-2xl border border-[color:var(--line)] bg-white px-4 py-3 text-sm font-extrabold uppercase tracking-[0.14em] text-[color:var(--ink-soft)] transition hover:-translate-y-0.5 hover:bg-[color:var(--slate)] disabled:translate-y-0 disabled:opacity-60";
+        ? "rounded-2xl border border-[color:var(--gold)] bg-[rgba(21,184,176,0.08)] px-4 py-3 text-sm font-extrabold uppercase tracking-[0.14em] text-[color:var(--navy)] transition hover:-translate-y-0.5 hover:bg-[color:var(--gold-soft)] disabled:translate-y-0 disabled:opacity-60"
+        : "rounded-2xl border border-[color:var(--line)] bg-white/84 px-4 py-3 text-sm font-extrabold uppercase tracking-[0.14em] text-[color:var(--ink-soft)] shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] transition hover:-translate-y-0.5 hover:bg-[color:var(--slate)] disabled:translate-y-0 disabled:opacity-60";
 
   return (
     <button type="button" onClick={onClick} disabled={disabled} className={className}>

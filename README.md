@@ -53,6 +53,21 @@ To create a production build:
 npm run build
 ```
 
+## GitHub Pages Deployment
+
+The repository includes a GitHub Pages workflow at `.github/workflows/deploy-pages.yml`.
+It deploys the app from the `develop` branch and is set up for the custom domain:
+
+`comrequote.tothebeginning.com`
+
+To finish the custom domain setup in GitHub Pages:
+
+1. Set the Pages source to `GitHub Actions`
+2. Set the custom domain to `comrequote.tothebeginning.com`
+3. Add a DNS `CNAME` record for `comrequote` pointing to `kameshmurali.github.io`
+
+The `public/CNAME` file ensures the deployed artifact includes the expected domain value.
+
 ## Main User Flow
 
 1. Select the quotation template
