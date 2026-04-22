@@ -1,0 +1,77 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Spectral:wght@500;600;700&display=swap");
+@import "tailwindcss";
+
+:root {
+  --ink: #142746;
+  --ink-soft: #334e73;
+  --paper: #f5efe4;
+  --paper-strong: #fffaf2;
+  --sand: #e9dbc0;
+  --mist: #ebf2fa;
+  --slate: #f7f8fa;
+  --gold: #b8860b;
+  --gold-soft: #f4e7ba;
+  --navy: #0d2b55;
+  --navy-soft: #1b4f8a;
+  --success: #257752;
+  --danger: #c0392b;
+  --line: rgba(13, 43, 85, 0.15);
+  color: var(--ink);
+  font-family: "Manrope", "Trebuchet MS", sans-serif;
+  line-height: 1.5;
+  font-weight: 500;
+  background:
+    radial-gradient(circle at top right, rgba(184, 134, 11, 0.18), transparent 28%),
+    radial-gradient(circle at left center, rgba(27, 79, 138, 0.12), transparent 35%),
+    linear-gradient(180deg, #fdfaf4 0%, #f7f1e7 100%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at top right, rgba(184, 134, 11, 0.18), transparent 28%),
+    radial-gradient(circle at left center, rgba(27, 79, 138, 0.12), transparent 35%),
+    linear-gradient(180deg, #fdfaf4 0%, #f7f1e7 100%);
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+::selection {
+  background: rgba(184, 134, 11, 0.24);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.paper-grid {
+  background-image:
+    linear-gradient(to right, rgba(13, 43, 85, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(13, 43, 85, 0.04) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+.section-title {
+  font-family: "Spectral", Georgia, serif;
+  letter-spacing: 0.01em;
+}
