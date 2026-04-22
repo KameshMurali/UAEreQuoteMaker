@@ -35,7 +35,8 @@ Interactive quotation generator for commercial real estate and labour accommodat
 - React Hook Form
 - Zod
 - `docx`
-- `@react-pdf/renderer`
+- `jspdf`
+- `jspdf-autotable`
 
 ## Getting Started
 
@@ -96,6 +97,6 @@ The wording, section order, financial tables, utilities/services blocks, numbere
 
 ## Notes
 
-- The heavy export libraries are loaded on demand so the main builder loads faster.
+- The export libraries are loaded on demand so the main builder loads faster.
 - Local draft support uses browser `localStorage`.
 - If a signature field is left blank, the generated document keeps an underline-style placeholder.
