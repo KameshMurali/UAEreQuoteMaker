@@ -182,23 +182,45 @@ const baseTableOptions: Partial<UserOptions> = {
 
 const drawHero = async (doc: jsPDF, data: QuotationDocumentData) => {
   const hasLogo = Boolean(data.headerLogoDataUrl);
-  const heroHeight = hasLogo ? 126 : 82;
+  const heroHeight = hasLogo ? 96 : 82;
   applyFillColor(doc, colors.navy);
   applyDrawColor(doc, colors.navy);
   doc.roundedRect(page.margin, page.margin, page.width - page.margin * 2, heroHeight, 6, 6, "FD");
 
-  let companyNameY = page.margin + 20;
-
   if (data.headerLogoDataUrl) {
     const sourceSize = await getImageDimensions(data.headerLogoDataUrl);
-    const fittedSize = getContainDimensions(sourceSize.width, sourceSize.height, 108, 42);
-    const logoX = page.width / 2 - fittedSize.width / 2;
-    const logoY = page.margin + 12;
+    const fittedSize = getContainDimensions(sourceSize.width, sourceSize.height, 124, 52);
+    const logoBoxX = page.margin + 18;
+    const logoBoxY = page.margin + 16;
+    const logoBoxWidth = 138;
+    const logoBoxHeight = 64;
+    const logoX = logoBoxX + (logoBoxWidth - fittedSize.width) / 2;
+    const logoY = logoBoxY + (logoBoxHeight - fittedSize.height) / 2;
+    const textX = logoBoxX + logoBoxWidth + 18;
 
+    doc.setFillColor(255, 255, 255);
+    doc.roundedRect(logoBoxX, logoBoxY, logoBoxWidth, logoBoxHeight, 8, 8, "F");
     doc.addImage(data.headerLogoDataUrl, "PNG", logoX, logoY, fittedSize.width, fittedSize.height);
-    companyNameY = logoY + fittedSize.height + 18;
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(14);
+    applyTextColor(doc, "#FFFFFF");
+    doc.text(data.headerCompanyName, textX, page.margin + 32);
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    applyTextColor(doc, colors.paper);
+    doc.text(data.headerTitle, textX, page.margin + 54);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(11);
+    applyTextColor(doc, "#C8D8ED");
+    doc.text(data.headerSubtitle, textX, page.margin + 73);
+
+    return page.margin + heroHeight + 16;
   }
 
+  const companyNameY = page.margin + 20;
   drawCenteredText(doc, data.headerCompanyName, companyNameY, 14, "#FFFFFF", "bold");
   drawCenteredText(doc, data.headerTitle, companyNameY + 22, 18, colors.paper, "bold");
   drawCenteredText(doc, data.headerSubtitle, companyNameY + 42, 11, "#C8D8ED");

@@ -1,6 +1,6 @@
 const storedLogoBounds = {
-  width: 480,
-  height: 180,
+  width: 720,
+  height: 260,
 };
 
 const readFileAsDataUrl = (file: File) =>
@@ -85,6 +85,8 @@ export const processLogoFile = async (file: File) => {
     throw new Error("The company logo could not be prepared for preview and export.");
   }
 
+  context.imageSmoothingEnabled = true;
+  context.imageSmoothingQuality = "high";
   context.clearRect(0, 0, canvas.width, canvas.height);
   context.drawImage(image, 0, 0, canvas.width, canvas.height);
 

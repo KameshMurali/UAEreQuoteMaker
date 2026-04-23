@@ -344,7 +344,7 @@ export const generateDocx = async (data: QuotationDocumentData, fileName: string
   const headerLogo = headerLogoDataUrl
     ? await (async () => {
         const sourceSize = await getImageDimensions(headerLogoDataUrl);
-        const fittedSize = getContainDimensions(sourceSize.width, sourceSize.height, 160, 64);
+        const fittedSize = getContainDimensions(sourceSize.width, sourceSize.height, 188, 76);
 
         return new ImageRun({
           type: "png",
@@ -353,6 +353,122 @@ export const generateDocx = async (data: QuotationDocumentData, fileName: string
         });
       })()
     : null;
+  const headerChildren = headerLogo
+    ? [
+        new Table({
+          width: { size: 100, type: WidthType.PERCENTAGE },
+          borders: {
+            top: { style: BorderStyle.NONE, color: colors.navy, size: 0 },
+            bottom: { style: BorderStyle.NONE, color: colors.navy, size: 0 },
+            left: { style: BorderStyle.NONE, color: colors.navy, size: 0 },
+            right: { style: BorderStyle.NONE, color: colors.navy, size: 0 },
+            insideHorizontal: { style: BorderStyle.NONE, color: colors.navy, size: 0 },
+            insideVertical: { style: BorderStyle.NONE, color: colors.navy, size: 0 },
+          },
+          rows: [
+            new TableRow({
+              children: [
+                new TableCell({
+                  width: { size: 2200, type: WidthType.DXA },
+                  verticalAlign: VerticalAlign.CENTER,
+                  shading: { fill: colors.navy },
+                  borders: {
+                    top: { style: BorderStyle.NONE, color: colors.navy, size: 0 },
+                    bottom: { style: BorderStyle.NONE, color: colors.navy, size: 0 },
+                    left: { style: BorderStyle.NONE, color: colors.navy, size: 0 },
+                    right: { style: BorderStyle.NONE, color: colors.navy, size: 0 },
+                  },
+                  margins: { top: 40, bottom: 40, left: 40, right: 180 },
+                  children: [
+                    new Paragraph({
+                      alignment: AlignmentType.LEFT,
+                      children: [headerLogo],
+                    }),
+                  ],
+                }),
+                new TableCell({
+                  width: { size: 6560, type: WidthType.DXA },
+                  verticalAlign: VerticalAlign.CENTER,
+                  shading: { fill: colors.navy },
+                  borders: {
+                    top: { style: BorderStyle.NONE, color: colors.navy, size: 0 },
+                    bottom: { style: BorderStyle.NONE, color: colors.navy, size: 0 },
+                    left: { style: BorderStyle.NONE, color: colors.navy, size: 0 },
+                    right: { style: BorderStyle.NONE, color: colors.navy, size: 0 },
+                  },
+                  margins: { top: 40, bottom: 40, left: 40, right: 40 },
+                  children: [
+                    new Paragraph({
+                      alignment: AlignmentType.LEFT,
+                      spacing: { after: 60 },
+                      children: [
+                        textRun(data.headerCompanyName, {
+                          bold: true,
+                          color: "FFFFFF",
+                          size: 28,
+                        }),
+                      ],
+                    }),
+                    new Paragraph({
+                      alignment: AlignmentType.LEFT,
+                      spacing: { after: 60 },
+                      children: [
+                        textRun(data.headerTitle, {
+                          bold: true,
+                          color: colors.paper,
+                          size: 36,
+                        }),
+                      ],
+                    }),
+                    new Paragraph({
+                      alignment: AlignmentType.LEFT,
+                      children: [
+                        textRun(data.headerSubtitle, {
+                          color: "C8D8ED",
+                          size: 22,
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        }),
+      ]
+    : [
+        new Paragraph({
+          alignment: AlignmentType.CENTER,
+          spacing: { after: 60 },
+          children: [
+            textRun(data.headerCompanyName, {
+              bold: true,
+              color: "FFFFFF",
+              size: 28,
+            }),
+          ],
+        }),
+        new Paragraph({
+          alignment: AlignmentType.CENTER,
+          spacing: { after: 60 },
+          children: [
+            textRun(data.headerTitle, {
+              bold: true,
+              color: colors.paper,
+              size: 36,
+            }),
+          ],
+        }),
+        new Paragraph({
+          alignment: AlignmentType.CENTER,
+          children: [
+            textRun(data.headerSubtitle, {
+              color: "C8D8ED",
+              size: 22,
+            }),
+          ],
+        }),
+      ];
   const document = new Document({
     sections: [
       {
@@ -385,48 +501,7 @@ export const generateDocx = async (data: QuotationDocumentData, fileName: string
                       right: { style: BorderStyle.SINGLE, color: colors.navy, size: 4 },
                     },
                     margins: { top: 240, bottom: 240, left: 360, right: 360 },
-                    children: [
-                      ...(headerLogo
-                        ? [
-                            new Paragraph({
-                              alignment: AlignmentType.CENTER,
-                              spacing: { after: 120 },
-                              children: [headerLogo],
-                            }),
-                          ]
-                        : []),
-                      new Paragraph({
-                        alignment: AlignmentType.CENTER,
-                        spacing: { after: 60 },
-                        children: [
-                          textRun(data.headerCompanyName, {
-                            bold: true,
-                            color: "FFFFFF",
-                            size: 28,
-                          }),
-                        ],
-                      }),
-                      new Paragraph({
-                        alignment: AlignmentType.CENTER,
-                        spacing: { after: 60 },
-                        children: [
-                          textRun(data.headerTitle, {
-                            bold: true,
-                            color: colors.paper,
-                            size: 36,
-                          }),
-                        ],
-                      }),
-                      new Paragraph({
-                        alignment: AlignmentType.CENTER,
-                        children: [
-                          textRun(data.headerSubtitle, {
-                            color: "C8D8ED",
-                            size: 22,
-                          }),
-                        ],
-                      }),
-                    ],
+                    children: headerChildren,
                   }),
                 ],
               }),

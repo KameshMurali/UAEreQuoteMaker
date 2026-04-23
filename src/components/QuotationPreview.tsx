@@ -25,22 +25,26 @@ export const QuotationPreview = ({ data }: QuotationPreviewProps) => {
         transition={{ duration: 0.55, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
         className="mx-auto max-w-[780px] rounded-[24px] bg-white p-4 shadow-[0_18px_45px_rgba(7,21,40,0.1)] sm:p-8"
       >
-        <div className="overflow-hidden rounded-[20px] border border-[color:var(--navy)] bg-[color:var(--navy)] text-center text-white">
-          <div className="px-6 py-5">
-            {data.headerLogoDataUrl ? (
-              <div className="mx-auto mb-4 flex h-20 w-44 items-center justify-center rounded-2xl bg-white/96 p-3 shadow-[0_10px_24px_rgba(7,21,40,0.18)]">
-                <img
-                  src={data.headerLogoDataUrl}
-                  alt={`${data.headerCompanyName} logo`}
-                  className="h-full w-full object-contain"
-                />
+        <div className="overflow-hidden rounded-[20px] border border-[color:var(--navy)] bg-[color:var(--navy)] text-white">
+          <div className={`px-6 py-5 ${data.headerLogoDataUrl ? "sm:px-7 sm:py-6" : ""}`}>
+            <div className={`items-center gap-5 ${data.headerLogoDataUrl ? "sm:flex" : ""}`}>
+              {data.headerLogoDataUrl ? (
+                <div className="mb-4 flex h-24 w-48 shrink-0 items-center justify-center rounded-2xl bg-white/96 p-4 shadow-[0_10px_24px_rgba(7,21,40,0.18)] sm:mb-0">
+                  <img
+                    src={data.headerLogoDataUrl}
+                    alt={`${data.headerCompanyName} logo`}
+                    className="h-full w-full object-contain object-left"
+                  />
+                </div>
+              ) : null}
+              <div className={data.headerLogoDataUrl ? "text-left" : "text-center"}>
+                <p className="text-lg font-extrabold tracking-[0.08em]">{data.headerCompanyName}</p>
+                <p className="mt-2 text-2xl font-extrabold tracking-[0.16em] text-[color:var(--paper)]">
+                  {data.headerTitle}
+                </p>
+                <p className="mt-3 text-sm text-[#c8d8ed]">{data.headerSubtitle}</p>
               </div>
-            ) : null}
-            <p className="text-lg font-extrabold tracking-[0.08em]">{data.headerCompanyName}</p>
-            <p className="mt-2 text-2xl font-extrabold tracking-[0.16em] text-[color:var(--paper)]">
-              {data.headerTitle}
-            </p>
-            <p className="mt-3 text-sm text-[#c8d8ed]">{data.headerSubtitle}</p>
+            </div>
           </div>
         </div>
 
