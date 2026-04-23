@@ -1,6 +1,7 @@
 import { jsPDF } from "jspdf";
 import autoTable, { type UserOptions } from "jspdf-autotable";
 import type { QuotationDocumentData } from "../types/quotation";
+import { getContainDimensions, getImageDimensions } from "../utils/images";
 
 const colors = {
   navy: "#0D2B55",
@@ -179,15 +180,28 @@ const baseTableOptions: Partial<UserOptions> = {
   tableLineWidth: 0.7,
 };
 
-const drawHero = (doc: jsPDF, data: QuotationDocumentData) => {
-  const heroHeight = 82;
+const drawHero = async (doc: jsPDF, data: QuotationDocumentData) => {
+  const hasLogo = Boolean(data.headerLogoDataUrl);
+  const heroHeight = hasLogo ? 126 : 82;
   applyFillColor(doc, colors.navy);
   applyDrawColor(doc, colors.navy);
   doc.roundedRect(page.margin, page.margin, page.width - page.margin * 2, heroHeight, 6, 6, "FD");
 
-  drawCenteredText(doc, data.headerCompanyName, page.margin + 20, 14, "#FFFFFF", "bold");
-  drawCenteredText(doc, data.headerTitle, page.margin + 42, 18, colors.paper, "bold");
-  drawCenteredText(doc, data.headerSubtitle, page.margin + 62, 11, "#C8D8ED");
+  let companyNameY = page.margin + 20;
+
+  if (data.headerLogoDataUrl) {
+    const sourceSize = await getImageDimensions(data.headerLogoDataUrl);
+    const fittedSize = getContainDimensions(sourceSize.width, sourceSize.height, 108, 42);
+    const logoX = page.width / 2 - fittedSize.width / 2;
+    const logoY = page.margin + 12;
+
+    doc.addImage(data.headerLogoDataUrl, "PNG", logoX, logoY, fittedSize.width, fittedSize.height);
+    companyNameY = logoY + fittedSize.height + 18;
+  }
+
+  drawCenteredText(doc, data.headerCompanyName, companyNameY, 14, "#FFFFFF", "bold");
+  drawCenteredText(doc, data.headerTitle, companyNameY + 22, 18, colors.paper, "bold");
+  drawCenteredText(doc, data.headerSubtitle, companyNameY + 42, 11, "#C8D8ED");
 
   return page.margin + heroHeight + 16;
 };
@@ -414,7 +428,7 @@ export const generatePdf = async (data: QuotationDocumentData, fileName: string)
     creator: "UAE reQuote Maker",
   });
 
-  let y = drawHero(doc, data);
+  let y = await drawHero(doc, data);
   y = drawMetaTable(doc, y, data);
 
   y = drawSectionBanner(doc, y, "Addressed To");

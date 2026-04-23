@@ -34,6 +34,8 @@ export interface QuotationFormValues {
   templateId: TemplateId;
   quotationName: string;
   issuingCompanyName: string;
+  companyLogoDataUrl: string;
+  companyLogoFileName: string;
   clientCompanyName: string;
   recipientCompanyName: string;
   quotationRef: string;
@@ -102,6 +104,7 @@ export interface SignatureBlock {
 export interface QuotationDocumentData {
   quotationName: string;
   headerCompanyName: string;
+  headerLogoDataUrl?: string;
   headerTitle: string;
   headerSubtitle: string;
   quotationReference: string;
@@ -125,4 +128,3 @@ export interface QuotationDocumentData {
   clientBlock: SignatureBlock;
   footerText: string;
 }
-

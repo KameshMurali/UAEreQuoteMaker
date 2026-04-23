@@ -27,6 +27,15 @@ export const QuotationPreview = ({ data }: QuotationPreviewProps) => {
       >
         <div className="overflow-hidden rounded-[20px] border border-[color:var(--navy)] bg-[color:var(--navy)] text-center text-white">
           <div className="px-6 py-5">
+            {data.headerLogoDataUrl ? (
+              <div className="mx-auto mb-4 flex h-20 w-44 items-center justify-center rounded-2xl bg-white/96 p-3 shadow-[0_10px_24px_rgba(7,21,40,0.18)]">
+                <img
+                  src={data.headerLogoDataUrl}
+                  alt={`${data.headerCompanyName} logo`}
+                  className="h-full w-full object-contain"
+                />
+              </div>
+            ) : null}
             <p className="text-lg font-extrabold tracking-[0.08em]">{data.headerCompanyName}</p>
             <p className="mt-2 text-2xl font-extrabold tracking-[0.16em] text-[color:var(--paper)]">
               {data.headerTitle}

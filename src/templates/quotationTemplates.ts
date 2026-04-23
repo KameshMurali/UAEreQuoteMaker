@@ -162,6 +162,8 @@ export const createDefaultValues = (templateId: TemplateId = "sharjah-excluding-
     templateId,
     quotationName: buildQuotationNameSuggestion(issuingCompanyName, clientCompanyName),
     issuingCompanyName,
+    companyLogoDataUrl: "",
+    companyLogoFileName: "",
     clientCompanyName,
     recipientCompanyName: clientCompanyName,
     quotationRef: buildQuotationRefSuggestion(template, clientCompanyName, date),
@@ -205,4 +207,3 @@ export const createDefaultValues = (templateId: TemplateId = "sharjah-excluding-
     clientAcceptanceDate: "",
   };
 };
-

@@ -2,6 +2,7 @@ import {
   AlignmentType,
   BorderStyle,
   Document,
+  ImageRun,
   type IParagraphOptions,
   type IRunOptions,
   Packer,
@@ -16,6 +17,7 @@ import {
 } from "docx";
 import { saveAs } from "file-saver";
 import type { QuotationDocumentData, SignatureBlock } from "../types/quotation";
+import { dataUrlToUint8Array, getContainDimensions, getImageDimensions } from "../utils/images";
 
 const colors = {
   navy: "0D2B55",
@@ -338,6 +340,19 @@ const createAcceptanceTable = (data: QuotationDocumentData) =>
   });
 
 export const generateDocx = async (data: QuotationDocumentData, fileName: string) => {
+  const headerLogoDataUrl = data.headerLogoDataUrl;
+  const headerLogo = headerLogoDataUrl
+    ? await (async () => {
+        const sourceSize = await getImageDimensions(headerLogoDataUrl);
+        const fittedSize = getContainDimensions(sourceSize.width, sourceSize.height, 160, 64);
+
+        return new ImageRun({
+          type: "png",
+          data: dataUrlToUint8Array(headerLogoDataUrl),
+          transformation: fittedSize,
+        });
+      })()
+    : null;
   const document = new Document({
     sections: [
       {
@@ -371,6 +386,15 @@ export const generateDocx = async (data: QuotationDocumentData, fileName: string
                     },
                     margins: { top: 240, bottom: 240, left: 360, right: 360 },
                     children: [
+                      ...(headerLogo
+                        ? [
+                            new Paragraph({
+                              alignment: AlignmentType.CENTER,
+                              spacing: { after: 120 },
+                              children: [headerLogo],
+                            }),
+                          ]
+                        : []),
                       new Paragraph({
                         alignment: AlignmentType.CENTER,
                         spacing: { after: 60 },

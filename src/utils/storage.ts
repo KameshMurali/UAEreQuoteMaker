@@ -13,7 +13,14 @@ export const saveDraft = (values: QuotationFormValues) => {
     data: values,
   };
 
-  localStorage.setItem(draftStorageKey, JSON.stringify(payload));
+  try {
+    localStorage.setItem(draftStorageKey, JSON.stringify(payload));
+  } catch {
+    throw new Error(
+      "Draft could not be saved locally. If you added a large logo image, try a smaller file or clear old browser storage.",
+    );
+  }
+
   return payload.savedAt;
 };
 
@@ -35,4 +42,3 @@ export const loadDraft = () => {
 export const clearDraft = () => {
   localStorage.removeItem(draftStorageKey);
 };
-

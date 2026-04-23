@@ -11,6 +11,8 @@ export const quotationSchema = z.object({
   }),
   quotationName: z.string().trim().min(1, "Quotation name is required."),
   issuingCompanyName: z.string().trim().min(1, "Issuing company name is required."),
+  companyLogoDataUrl: z.string(),
+  companyLogoFileName: z.string(),
   clientCompanyName: z.string().trim().min(1, "Client company name is required."),
   recipientCompanyName: z.string().trim().min(1, "Recipient company name is required."),
   quotationRef: z.string().trim().min(1, "Quotation reference is required."),
@@ -55,4 +57,3 @@ export const quotationSchema = z.object({
 });
 
 export type QuotationSchema = z.infer<typeof quotationSchema>;
-

@@ -20,6 +20,7 @@ export const mapQuotationToDocument = (values: QuotationFormValues): QuotationDo
   return {
     quotationName: values.quotationName,
     headerCompanyName: values.issuingCompanyName,
+    headerLogoDataUrl: values.companyLogoDataUrl.trim() || undefined,
     headerTitle: "QUOTATION & PROPOSAL",
     headerSubtitle: template.heroSubtitle,
     quotationReference: values.quotationRef,

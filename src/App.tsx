@@ -1,6 +1,15 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion, useReducedMotion } from "framer-motion";
-import { startTransition, useDeferredValue, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import {
+  startTransition,
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type ReactNode,
+} from "react";
 import { FormProvider, useFieldArray, useForm, useWatch, type Resolver } from "react-hook-form";
 import { ArrayEditor } from "./components/ArrayEditor";
 import { QuotationPreview } from "./components/QuotationPreview";
@@ -19,6 +28,7 @@ import {
   buildSubjectSuggestion,
   formatCurrency,
 } from "./utils/formatters";
+import { processLogoFile } from "./utils/images";
 import { clearDraft, loadDraft, saveDraft } from "./utils/storage";
 
 const paymentScheduleOptions = [
@@ -53,6 +63,17 @@ const formatSavedTime = (value: string | null) => {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(new Date(value));
+};
+
+const hydrateLoadedValues = (values: Partial<QuotationFormValues>): QuotationFormValues => {
+  const templateId = values.templateId ?? "sharjah-excluding-utilities";
+
+  return {
+    ...createDefaultValues(templateId),
+    ...values,
+    companyLogoDataUrl: values.companyLogoDataUrl ?? "",
+    companyLogoFileName: values.companyLogoFileName ?? "",
+  };
 };
 
 const App = () => {
@@ -143,8 +164,9 @@ const App = () => {
       return;
     }
 
-    lastTemplateIdRef.current = existingDraft.data.templateId;
-    startTransition(() => reset(existingDraft.data));
+    const hydratedDraft = hydrateLoadedValues(existingDraft.data);
+    lastTemplateIdRef.current = hydratedDraft.templateId;
+    startTransition(() => reset(hydratedDraft));
     setLastSavedAt(existingDraft.savedAt);
     setStatus({
       tone: "success",
@@ -321,12 +343,22 @@ const App = () => {
   }, [getValues, setValue, watchedValues.agencyFeeValue, watchedValues.vatPercent]);
 
   const handleSaveDraft = () => {
-    const savedAt = saveDraft(getValues());
-    setLastSavedAt(savedAt);
-    setStatus({
-      tone: "success",
-      message: "Draft saved locally. You can return later and continue from the same data.",
-    });
+    try {
+      const savedAt = saveDraft(getValues());
+      setLastSavedAt(savedAt);
+      setStatus({
+        tone: "success",
+        message: "Draft saved locally. You can return later and continue from the same data.",
+      });
+    } catch (error) {
+      setStatus({
+        tone: "error",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Draft could not be saved locally. Please try again.",
+      });
+    }
   };
 
   const handleLoadDraft = () => {
@@ -340,8 +372,9 @@ const App = () => {
       return;
     }
 
-    lastTemplateIdRef.current = draft.data.templateId;
-    startTransition(() => reset(draft.data));
+    const hydratedDraft = hydrateLoadedValues(draft.data);
+    lastTemplateIdRef.current = hydratedDraft.templateId;
+    startTransition(() => reset(hydratedDraft));
     setLastSavedAt(draft.savedAt);
     setStatus({
       tone: "success",
@@ -375,6 +408,43 @@ const App = () => {
     setStatus({
       tone: "neutral",
       message: "Local draft storage was cleared for this browser.",
+    });
+  };
+
+  const handleCompanyLogoChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    try {
+      const logo = await processLogoFile(file);
+      setValue("companyLogoDataUrl", logo.dataUrl, { shouldDirty: true, shouldValidate: false });
+      setValue("companyLogoFileName", logo.fileName, { shouldDirty: true, shouldValidate: false });
+      setStatus({
+        tone: "success",
+        message: "Company logo added. It will appear in the preview and exported quotation documents.",
+      });
+    } catch (error) {
+      setStatus({
+        tone: "error",
+        message:
+          error instanceof Error
+            ? error.message
+            : "The company logo could not be uploaded. Please try a different image file.",
+      });
+    } finally {
+      event.target.value = "";
+    }
+  };
+
+  const handleClearCompanyLogo = () => {
+    setValue("companyLogoDataUrl", "", { shouldDirty: true, shouldValidate: false });
+    setValue("companyLogoFileName", "", { shouldDirty: true, shouldValidate: false });
+    setStatus({
+      tone: "neutral",
+      message: "Company logo removed from the preview and future exports.",
     });
   };
 
@@ -572,6 +642,53 @@ const App = () => {
                     <Field label="Date" error={errors.date?.message}>
                       <input {...register("date")} className={inputClassName} type="date" />
                     </Field>
+
+                    <div className="md:col-span-2">
+                      <Field
+                        label="Company Logo"
+                        hint="Optional. The uploaded logo is added to the quotation preview, DOCX export, PDF export, and local draft."
+                      >
+                        <div className="space-y-3">
+                          <input
+                            accept="image/*"
+                            className="block w-full cursor-pointer rounded-2xl border border-dashed border-[color:var(--gold)] bg-[rgba(21,184,176,0.06)] px-4 py-3 text-sm text-[color:var(--ink)] file:mr-4 file:rounded-full file:border-0 file:bg-[color:var(--navy)] file:px-4 file:py-2 file:text-xs file:font-bold file:uppercase file:tracking-[0.14em] file:text-white hover:bg-[rgba(21,184,176,0.12)]"
+                            type="file"
+                            onChange={handleCompanyLogoChange}
+                          />
+
+                          {watchedValues.companyLogoDataUrl ? (
+                            <div className="flex flex-col gap-4 rounded-[24px] border border-[color:var(--line)] bg-[linear-gradient(180deg,rgba(255,255,255,0.86),rgba(245,249,252,0.96))] p-4 sm:flex-row sm:items-center">
+                              <div className="flex h-20 w-full items-center justify-center rounded-2xl bg-white p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] sm:w-40">
+                                <img
+                                  src={watchedValues.companyLogoDataUrl}
+                                  alt={`${watchedValues.issuingCompanyName || "Company"} logo`}
+                                  className="h-full w-full object-contain"
+                                />
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="truncate text-sm font-semibold text-[color:var(--ink)]">
+                                  {watchedValues.companyLogoFileName || "Uploaded company logo"}
+                                </p>
+                                <p className="mt-1 text-sm leading-6 text-[color:var(--ink-soft)]">
+                                  This logo will be placed in the quotation header for preview, Word, and PDF output.
+                                </p>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={handleClearCompanyLogo}
+                                className="rounded-full border border-[color:var(--line)] px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-[color:var(--danger)] transition hover:bg-[rgba(224,91,73,0.08)]"
+                              >
+                                Remove Logo
+                              </button>
+                            </div>
+                          ) : (
+                            <p className="rounded-2xl border border-[color:var(--line)] bg-white/72 px-4 py-3 text-sm text-[color:var(--ink-soft)]">
+                              No company logo uploaded yet.
+                            </p>
+                          )}
+                        </div>
+                      </Field>
+                    </div>
                   </div>
                 </form>
               </SectionCard>
