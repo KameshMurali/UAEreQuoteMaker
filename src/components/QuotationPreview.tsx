@@ -29,7 +29,7 @@ export const QuotationPreview = ({ data }: QuotationPreviewProps) => {
           <div className={`px-6 py-5 ${data.headerLogoDataUrl ? "sm:px-7 sm:py-6" : ""}`}>
             <div className={`items-center gap-5 ${data.headerLogoDataUrl ? "sm:flex" : ""}`}>
               {data.headerLogoDataUrl ? (
-                <div className="mb-4 flex h-24 w-48 shrink-0 items-center justify-center rounded-2xl bg-white/96 p-4 shadow-[0_10px_24px_rgba(7,21,40,0.18)] sm:mb-0">
+                <div className="mb-4 flex h-24 w-48 shrink-0 items-center justify-start sm:mb-0">
                   <img
                     src={data.headerLogoDataUrl}
                     alt={`${data.headerCompanyName} logo`}

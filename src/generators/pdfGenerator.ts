@@ -190,16 +190,10 @@ const drawHero = async (doc: jsPDF, data: QuotationDocumentData) => {
   if (data.headerLogoDataUrl) {
     const sourceSize = await getImageDimensions(data.headerLogoDataUrl);
     const fittedSize = getContainDimensions(sourceSize.width, sourceSize.height, 124, 52);
-    const logoBoxX = page.margin + 18;
-    const logoBoxY = page.margin + 16;
-    const logoBoxWidth = 138;
-    const logoBoxHeight = 64;
-    const logoX = logoBoxX + (logoBoxWidth - fittedSize.width) / 2;
-    const logoY = logoBoxY + (logoBoxHeight - fittedSize.height) / 2;
-    const textX = logoBoxX + logoBoxWidth + 18;
+    const logoX = page.margin + 20;
+    const logoY = page.margin + (heroHeight - fittedSize.height) / 2;
+    const textX = page.margin + 162;
 
-    doc.setFillColor(255, 255, 255);
-    doc.roundedRect(logoBoxX, logoBoxY, logoBoxWidth, logoBoxHeight, 8, 8, "F");
     doc.addImage(data.headerLogoDataUrl, "PNG", logoX, logoY, fittedSize.width, fittedSize.height);
 
     doc.setFont("helvetica", "bold");
